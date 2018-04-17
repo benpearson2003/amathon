@@ -2,11 +2,17 @@ import os
 from PIL import Image, ImageDraw
 import scrapeImages
 
-scrapeImages.run('doodle')
+inputDirectory = 'art'
+if not os.path.exists(inputDirectory):
+    os.makedirs(inputDirectory)
+
+outputDirectory = 'upload'
+if not os.path.exists(outputDirectory):
+    os.makedirs(outputDirectory)
+
+scrapeImages.run('doodle', inputDirectory)
 width = 4500
 height = 5400
-inputDirectory = 'art'
-outputDirectory = 'upload'
 
 for filename in os.listdir(inputDirectory):
     # get file
@@ -17,6 +23,8 @@ for filename in os.listdir(inputDirectory):
     halfWidth = width/2
     if(artW < halfWidth):
         art = art.resize((int(halfWidth),int(halfWidth/artW*artH)))
+    else:
+        print ("didn't need resizing")
     artW, artH = art.size
 
     # create blank shirt and paste art
