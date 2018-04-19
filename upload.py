@@ -75,12 +75,11 @@ def run(uploadDirectory, daily_limit):
                 break
 
             browser.get('http://merch.amazon.com/merch-tshirt/title-setup/new/upload_art')
-
-            #log in if credentials are supplied in the CSV
-            userEmail = input('Enter your email: ')
-            userPass = input('Enter your password: ')
+            
             try:
                 emailElem = browser.find_element_by_id('ap_email')
+                userEmail = input('Enter your email: ')
+                userPass = input('Enter your password: ')
                 emailElem.send_keys(userEmail)
                 passwordElem = browser.find_element_by_id('ap_password')
                 passwordElem.send_keys(userPass)
