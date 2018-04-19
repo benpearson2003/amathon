@@ -1,12 +1,27 @@
+import argparse
 import os
 from PIL import Image, ImageDraw
+import merchify
 import scrapeImages
 import upload
 
-keyword = 'reboot'
-dailyLimit = 25
-inputDirectory = 'art'
-outputDirectory = 'upload'
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--scrape", action="store_true")
+parser.add_argument("-u", "--upload", action="store_true")
+parser.add_argument("-k", "--keyword", type=str, help="to be searched")
+parser.add_argument("-i", "--inputDirectory", type=str, help="to find artworks")
+parser.add_argument("-o", "--outputDirectory", type=str, help="to save finished")
+parser.add_argument("-l", "--limit", type=int, help="maximum uploads")
+parser.add_argument("-w", "--width", type=int, help="width of finished")
+parser.add_argument("-t", "--height", type=int, help="height of finished")
+args = parser.parse_args()
+
+keyword = args.keyword if args.keyword is not None else 'default'
+dailyLimit = args.limit if args.limit is not None else 10
+inputDirectory = args.inputDirectory if args.inputDirectory is not None else 'art'
+outputDirectory = args.outputDirectory if args.outputDirectory is not None else 'upload'
+width = args.width if args.width is not None else 4500
+height = args.height if args.height is not None else 5400
 
 if not os.path.exists(inputDirectory):
     os.makedirs(inputDirectory)
@@ -14,30 +29,10 @@ if not os.path.exists(inputDirectory):
 if not os.path.exists(outputDirectory):
     os.makedirs(outputDirectory)
 
-scrapeImages.run(keyword, inputDirectory, dailyLimit)
-width = 4500
-height = 5400
+if args.scrape:
+    scrapeImages.run(keyword, inputDirectory, dailyLimit)
 
-for filename in os.listdir(inputDirectory):
-    # get file
-    art = Image.open(inputDirectory + '/' + filename)
+merchify.run(width, height, inputDirectory, outputDirectory)
 
-    # resize file if necessary
-    artW, artH = art.size
-    halfWidth = width/2
-    if(artW < halfWidth):
-        art = art.resize((int(halfWidth),int(halfWidth/artW*artH)))
-    else:
-        print ("didn't need resizing")
-    artW, artH = art.size
-
-    # create blank shirt and paste art
-    shirt = Image.new('RGBA',(width, height))
-    shirt.paste(art, (int((width-artW)/2),int((height-artH)/10)))
-
-    # save shirt
-    shirt.save(outputDirectory + '/' + os.path.splitext(filename)[0] + '_shirt.png', 'png')
-
-upload.run(outputDirectory, dailyLimit)
-os.rmtree(inputDirectory)
-os.rmtree(outputDirectory)
+if args.upload:
+    upload.run(outputDirectory, dailyLimit)
