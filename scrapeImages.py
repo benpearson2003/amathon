@@ -6,6 +6,7 @@ import re
 import os
 import uuid
 import sys
+from urllib.parse import urlparse
 from urllib.request import urlopen, Request
 
 from bs4 import BeautifulSoup
@@ -52,9 +53,7 @@ def get_raw_image(url):
     resp = urlopen(req)
     return resp.read()
 
-def save_image(raw_image, image_type, save_directory):
-    extension = image_type if image_type else 'jpg'
-    file_name = str(uuid.uuid4().hex) + "." + extension
+def save_image(raw_image, file_name, save_directory):
     save_path = os.path.join(save_directory, file_name)
     with open(save_path, 'wb+') as image_file:
         image_file.write(raw_image)
@@ -64,7 +63,8 @@ def download_images_to_dir(images, save_directory, num_images):
         try:
             logger.info("Making request (%d/%d): %s", i, num_images, url)
             raw_image = get_raw_image(url)
-            save_image(raw_image, image_type, save_directory)
+            filename = os.path.basename(urlparse(url).path)
+            save_image(raw_image, filename, save_directory)
         except Exception as e:
             logger.exception(e)
 

@@ -1,16 +1,20 @@
 import os
 from PIL import Image, ImageDraw
 import scrapeImages
+import upload
 
+keyword = 'reboot'
+dailyLimit = 25
 inputDirectory = 'art'
+outputDirectory = 'upload'
+
 if not os.path.exists(inputDirectory):
     os.makedirs(inputDirectory)
 
-outputDirectory = 'upload'
 if not os.path.exists(outputDirectory):
     os.makedirs(outputDirectory)
 
-scrapeImages.run('doodle', inputDirectory)
+scrapeImages.run(keyword, inputDirectory, dailyLimit)
 width = 4500
 height = 5400
 
@@ -33,3 +37,7 @@ for filename in os.listdir(inputDirectory):
 
     # save shirt
     shirt.save(outputDirectory + '/' + os.path.splitext(filename)[0] + '_shirt.png', 'png')
+
+upload.run(outputDirectory, dailyLimit)
+os.rmtree(inputDirectory)
+os.rmtree(outputDirectory)
