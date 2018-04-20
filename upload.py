@@ -10,6 +10,7 @@ def run(uploadDirectory, daily_limit):
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     browser = webdriver.Chrome(chrome_options=options)
+    browser.set_window_size(200,200)
 
     i = 0
     try:
@@ -75,7 +76,7 @@ def run(uploadDirectory, daily_limit):
                 break
 
             browser.get('http://merch.amazon.com/merch-tshirt/title-setup/new/upload_art')
-            
+
             try:
                 emailElem = browser.find_element_by_id('ap_email')
                 userEmail = input('Enter your email: ')
